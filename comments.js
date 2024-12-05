@@ -1,30 +1,25 @@
-// Crete web server
-// Create a web server that listens on port 3000 and serves the comments.html file
-// Use the fs module to read the file and send it to the client
-// If the file doesn't exist, send a 404 status code
-// If there's an error reading the file, send a 500 status code
-// Use the http module to create the server
-// Use the fs module to read the file
-// Use the res object to send the file to the client
+//create web server
 
-const http = require('http')
-const fs = require('fs')
+var http = require("http");
+var fs = require("fs");
+var url = require("url");
 
-const server = http.createServer((req, res) => {
-  fs.readFile('comments.html', (err, data) => {
-    if (err) {
-      res.writeHead(500)
-      res.end('Internal server error')
-    } else {
-      res.writeHead(200)
-      res.end(data)
-    }
-  })
-})
+var server = http.createServer(function(req, res) {
+	var path = url.parse(req.url).pathname;
+	var filePath = __dirname + path;
 
-server.listen(3000, () => {
-  console.log('Server is listening on port 3000')
-})
+	fs.exists(filePath, function(exists) {
+		if(exists) {
+			fs.readFile(filePath, function(err, data) {
+				res.end(data);
+			});
+		} else {
+			res.statusCode = 404;
+			res.end("404 not found");
+		}
+	});
+});
 
-
-
+server.listen(8080, function() {
+	console.log("Server is listening on port 8080");
+});
